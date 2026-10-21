@@ -1,0 +1,5 @@
+/* liste_classe.css : liste de classe (trois cartes de chiffres clés au lieu de quatre). */
+
+@media (min-width: 992px) {
+  .cartes.trois { grid-template-columns: repeat(3, 1fr); }
+}

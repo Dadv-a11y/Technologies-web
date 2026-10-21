@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Emblème du portail de notes : un livre ouvert sous une étoile</title>
+  <path d="M8 6h48v26c0 14-10 22-24 26C18 54 8 46 8 32z" fill="#1B3A6B" stroke="#E0A526" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M32 11l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z" fill="#E0A526"/>
+  <path d="M14 33c6-2 12-2 18 2 6-4 12-4 18-2v13c-6-2-12-2-18 2-6-4-12-4-18-2z" fill="#FFFFFF"/>
+  <path d="M32 35v13" stroke="#1B3A6B" stroke-width="2"/>
+</svg>

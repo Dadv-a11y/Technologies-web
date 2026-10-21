@@ -1,0 +1,15 @@
+/* enseignant_tableau.css : page « Mes classes » de l'enseignant. */
+
+.liens-sequences { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.liens-sequences a {
+  display: inline-block;
+  min-width: 44px;
+  min-height: 44px;
+  line-height: 44px;
+  text-align: center;
+  border: 1px solid #1B3A6B;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.liens-sequences a:hover { background: #E8EDF7; }
+.liste-classes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }

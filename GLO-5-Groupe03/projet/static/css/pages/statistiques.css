@@ -1,0 +1,4 @@
+/* statistiques.css : page des statistiques du proviseur. */
+
+.podium { margin: 0; padding-left: 1.2rem; }
+.rang-podium { display: inline-block; min-width: 2.2rem; font-weight: bold; color: #1B3A6B; }
