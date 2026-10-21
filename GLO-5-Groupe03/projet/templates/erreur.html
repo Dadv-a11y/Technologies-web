@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titre %}Erreur {{ code }}{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/erreur.css') }}">{% endblock %}
+{% block contenu %}
+<section class="page-erreur">
+  <p class="code-erreur">{{ code }}</p>
+  {% if code == 404 %}
+  <h1>Page introuvable</h1>
+  <p>Cette adresse n'existe pas, ou la séquence demandée n'existe pas (les séquences vont de 1 à {{ nb_sequences }}).</p>
+  {% elif code == 403 %}
+  <h1>Accès refusé</h1>
+  <p>Vous n'avez pas le droit de consulter cette page : elle concerne une autre classe, une autre matière ou le proviseur.</p>
+  {% else %}
+  <h1>Connexion nécessaire</h1>
+  <p>Connectez-vous pour continuer.</p>
+  {% endif %}
+  <p><a class="bouton" href="{{ url_for('accueil') }}">Retour à l'accueil</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titre %}Mes classes{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/enseignant_tableau.css') }}">{% endblock %}
+{% block contenu %}
+<h1>Espace {{ 'du proviseur' if role == 'admin' else 'enseignant' }}</h1>
+<p>Bonjour {{ nom_connecte }}.</p>
+
+{% if enseignements %}
+<section aria-labelledby="titre-saisie">
+  <h2 id="titre-saisie">Saisir ou corriger des notes</h2>
+  <p>Choisissez la séquence : le formulaire affiche les notes déjà enregistrées, que vous pouvez corriger.</p>
+  <div class="tableau-defilant" role="region" aria-label="Mes matières et mes classes" tabindex="0">
+    <table>
+      <caption>Mes matières par classe</caption>
+      <thead>
+        <tr><th scope="col">Classe</th><th scope="col">Matière</th><th scope="col">Séquence</th></tr>
+      </thead>
+      <tbody>
+        {% for e in enseignements %}
+        <tr>
+          <th scope="row">{{ e.classe }}</th>
+          <td>{{ e.matiere }}</td>
+          <td>
+            <ul class="liens-sequences">
+              {% for s in range(1, nb_sequences + 1) %}
+              <li><a href="{{ url_for('saisie', classe_id=e.classe_id, matiere_id=e.matiere_id, seq=s) }}">{{ s }}<span class="visuellement-cache"> : saisir {{ e.matiere }} en {{ e.classe }}, séquence {{ s }}</span></a></li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section aria-labelledby="titre-classes">
+  <h2 id="titre-classes">Listes de classe</h2>
+  {% if classes %}
+  <ul class="liste-classes">
+    {% for c in classes %}
+    <li><a class="bouton" href="{{ url_for('liste_classe', classe_id=c.id) }}">{{ c.nom }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>Aucune classe ne vous est rattachée.</p>
+  {% endif %}
+</section>
+
+{% if role == 'admin' %}
+<p><a href="{{ url_for('statistiques') }}">Voir les statistiques de l'établissement</a></p>
+{% endif %}
+{% endblock %}

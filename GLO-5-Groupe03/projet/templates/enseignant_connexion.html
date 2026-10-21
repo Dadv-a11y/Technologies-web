@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block titre %}Connexion enseignant{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/connexion.css') }}">{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/connexion.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<section class="accueil">
+  <div class="presentation">
+    <h1>Espace enseignant</h1>
+    <p>Saisissez et corrigez les notes de vos classes, consultez les moyennes et les rangs.</p>
+    <p>Le proviseur y trouve aussi les statistiques de l'établissement.</p>
+    <p>Vous êtes élève ? <a href="{{ url_for('accueil') }}">Consultez votre bulletin</a>.</p>
+  </div>
+
+  <form id="form-enseignant" class="formulaire" method="post" action="{{ url_for('connexion_enseignant') }}" novalidate>
+    <h2>Connexion</h2>
+    <p id="erreur" class="erreur-js" role="alert"></p>
+    <label for="login">Login</label>
+    <input id="login" name="login" type="text" autocomplete="username" required value="{{ login }}">
+    <label for="mot_de_passe">Mot de passe</label>
+    <input id="mot_de_passe" name="mot_de_passe" type="password" autocomplete="current-password" required>
+    <button type="submit" class="bouton">Se connecter</button>
+  </form>
+</section>
+{% endblock %}

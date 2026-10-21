@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block titre %}Saisie · {{ matiere.nom }} · {{ classe.nom }}{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/saisie.css') }}">{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/saisie.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<h1>Saisie des notes</h1>
+<p class="contexte-saisie"><strong>{{ matiere.nom }}</strong> (coefficient {{ matiere.coefficient }}) · {{ classe.nom }} · séquence {{ seq }}</p>
+
+<nav class="choix-sequence" aria-label="Choix de la séquence">
+  <ul>
+    {% for s in range(1, nb_sequences + 1) %}
+    <li><a href="{{ url_for('saisie', classe_id=classe.id, matiere_id=matiere.id, seq=s) }}"{% if s == seq %} aria-current="page"{% endif %}>Séq {{ s }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+<form id="form-saisie" method="post" novalidate>
+  <p class="aide">Les notes déjà enregistrées sont pré-remplies : pour en corriger une, changez sa valeur puis enregistrez. Une case vide est ignorée.</p>
+  <p id="erreur" class="erreur-js" role="alert"></p>
+
+  <div class="tableau-defilant" role="region" aria-label="Notes de la classe" tabindex="0">
+    <table class="table-saisie">
+      <caption>Notes sur 20 de la classe {{ classe.nom }}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="optionnelle">Matricule</th>
+          <th scope="col">Élève</th>
+          <th scope="col">Enregistrée</th>
+          <th scope="col">Nouvelle note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in eleves %}
+        <tr>
+          <td class="optionnelle">{{ e.matricule }}</td>
+          <th scope="row">{{ e.nom }} {{ e.prenom }}</th>
+          <td>{{ enregistrees.get(e.id)|note }}</td>
+          <td>
+            <label class="visuellement-cache" for="note-{{ e.id }}">Note de {{ e.nom }} {{ e.prenom }}</label>
+            <input class="champ-note" id="note-{{ e.id }}" name="note_{{ e.id }}" type="number" min="0" max="20" step="0.01"
+                   inputmode="decimal" value="{{ affichees[e.id] }}" data-ancienne="{{ enregistrees.get(e.id, '') }}">
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="moyenne-direct">Moyenne de la classe (en direct) : <strong id="moyenne-direct">—</strong></p>
+
+  <p id="resume-saisie" class="aide" aria-live="polite"></p>
+  <button type="submit" class="bouton">Enregistrer les notes</button>
+  <a class="bouton secondaire" href="{{ url_for('liste_classe', classe_id=classe.id, seq=seq) }}">Voir la liste de classe</a>
+</form>
+{% endblock %}

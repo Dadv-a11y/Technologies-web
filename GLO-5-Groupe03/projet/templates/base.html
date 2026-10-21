@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block description %}Portail de notes du Lycée de Makepe : bulletins des élèves, saisie des notes par les enseignants, statistiques.{% endblock %}">
+  <title>{% block titre %}Portail de notes{% endblock %} · Lycée de Makepe</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block css %}{% endblock %}
+  {% block lib %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+  <header>
+    <a class="logo" href="{{ url_for('accueil') }}">
+      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Emblème du portail : un livre ouvert sous une étoile" width="40" height="40">
+      <span>Lycée de Makepe</span>
+    </a>
+    <button id="bouton-menu" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-principal">&#9776;</button>
+    <nav id="menu-principal" aria-label="Navigation principale">
+      <ul>
+        {% if role == 'eleve' %}
+        <li><a href="{{ url_for('bulletin') }}">Mon bulletin</a></li>
+        <li><a href="{{ url_for('historique') }}">Historique</a></li>
+        <li><a href="{{ url_for('fiche') }}">Ma fiche</a></li>
+        {% elif role %}
+        <li><a href="{{ url_for('tableau_enseignant') }}">Mes classes</a></li>
+        {% if role == 'admin' %}<li><a href="{{ url_for('statistiques') }}">Statistiques</a></li>{% endif %}
+        {% else %}
+        <li><a href="{{ url_for('accueil') }}">Espace élève</a></li>
+        <li><a href="{{ url_for('connexion_enseignant') }}">Espace enseignant</a></li>
+        {% endif %}
+        {% if role %}
+        <li class="identite">{{ nom_connecte }}</li>
+        <li>
+          <form method="post" action="{{ url_for('deconnexion') }}">
+            <button type="submit" class="bouton-lien">Déconnexion</button>
+          </form>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+  <main id="contenu">
+    {% for categorie, message in get_flashed_messages(with_categories=true) %}
+      <p class="message {{ categorie }}" role="{{ 'alert' if categorie == 'erreur' else 'status' }}">{{ message }}</p>
+    {% endfor %}
+    {% block contenu %}{% endblock %}
+  </main>
+  <footer>
+    <p>Portail de notes du Lycée de Makepe, Douala · Année scolaire {{ annee_scolaire }}</p>
+    <p>Projet 3 · GLO-5-Groupe03 · Les élèves et les notes de ce site sont fictifs.</p>
+  </footer>
+</body>
+</html>

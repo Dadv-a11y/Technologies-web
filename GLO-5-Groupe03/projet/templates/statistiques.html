@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block titre %}Statistiques{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/statistiques.css') }}">{% endblock %}
+{% block lib %}<script src="{{ url_for('static', filename='js/lib/chart.umd.js') }}" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/statistiques.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<h1>Statistiques de l'établissement</h1>
+<p>Séquence {{ seq }} · année scolaire {{ annee_scolaire }}</p>
+
+<nav class="choix-sequence" aria-label="Choix de la séquence">
+  <ul>
+    {% for s in range(1, nb_sequences + 1) %}
+    <li><a href="{{ url_for('statistiques', seq=s) }}"{% if s == seq %} aria-current="page"{% endif %}>Séq {{ s }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+<section aria-labelledby="titre-vue">
+  <h2 id="titre-vue">Vue d'ensemble</h2>
+  <div class="tableau-defilant" role="region" aria-label="Moyenne générale et taux de réussite par classe" tabindex="0">
+    <table>
+      <caption>Moyenne générale et taux de réussite (moyenne de 10 ou plus)</caption>
+      <thead>
+        <tr><th scope="col">Classe</th><th scope="col">Élèves notés</th><th scope="col">Moyenne générale</th><th scope="col">Taux de réussite</th></tr>
+      </thead>
+      <tbody>
+        {% for c in stats %}
+        <tr>
+          <th scope="row">{{ c.classe }}</th>
+          <td>{{ c.notes }} / {{ c.effectif }}</td>
+          <td>{{ c.moyenne_generale|note }}</td>
+          <td>{% if c.taux_reussite is none %}—{% else %}{{ '%.1f'|format(c.taux_reussite)|replace('.', ',') }} %{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="titre-tranches">
+  <h2 id="titre-tranches">Répartition des moyennes par tranches</h2>
+  <figure class="graphique">
+    <div class="zone-graphique">
+      <canvas id="graphique-tranches" data-url="{{ url_for('api_statistiques', seq=seq) }}"
+              role="img" aria-label="Nombre d'élèves par tranche de moyenne et par classe">
+        Le tableau ci-dessous donne les mêmes effectifs.
+      </canvas>
+    </div>
+    <figcaption>Nombre d'élèves par tranche de moyenne et par classe</figcaption>
+  </figure>
+  <div class="tableau-defilant" role="region" aria-label="Effectifs par tranche" tabindex="0">
+    <table>
+      <caption>Effectifs par tranche de moyenne</caption>
+      <thead>
+        <tr><th scope="col">Classe</th>{% for t in tranches %}<th scope="col">{{ t }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for c in stats %}
+        <tr><th scope="row">{{ c.classe }}</th>{% for t in tranches %}<td>{{ c.tranches[t] }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="titre-premiers">
+  <h2 id="titre-premiers">Les trois premiers de chaque classe</h2>
+  <div class="cartes">
+    {% for c in stats %}
+    <div class="carte">
+      <h3>{{ c.classe }}</h3>
+      {% if c.premiers %}
+      <ol class="podium">
+        {% for p in c.premiers %}
+        <li><span class="rang-podium">{{ p.rang|rang }}</span> {{ p.nom }} <strong>{{ p.moyenne|note }}</strong></li>
+        {% endfor %}
+      </ol>
+      {% else %}<p>Pas encore de notes.</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section aria-labelledby="titre-matieres">
+  <h2 id="titre-matieres">Moyenne de chaque matière par classe</h2>
+  <div class="tableau-defilant" role="region" aria-label="Moyennes par matière et par classe" tabindex="0">
+    <table>
+      <caption>Moyenne de chaque matière par classe</caption>
+      <thead>
+        <tr><th scope="col">Matière</th>{% for c in stats %}<th scope="col">{{ c.classe }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for m in stats[0].par_matiere %}
+        {% set i = loop.index0 %}
+        <tr>
+          <th scope="row">{{ m.matiere }}</th>
+          {% for c in stats %}<td>{{ c.par_matiere[i].moyenne|note }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block titre %}Ma fiche{% endblock %}
+{% block contenu %}
+<h1>Fiche d'informations de l'élève</h1>
+<section class="fiche" aria-labelledby="titre-identite">
+  <h2 id="titre-identite">Identité</h2>
+  <dl class="identite-eleve">
+    <div><dt>Noms</dt><dd>{{ eleve.nom }}</dd></div>
+    <div><dt>Prénoms</dt><dd>{{ eleve.prenom }}</dd></div>
+    <div><dt>Matricule</dt><dd>{{ eleve.matricule }}</dd></div>
+    <div><dt>Né(e) le</dt><dd>{{ eleve.date_naissance|date_fr }} à {{ eleve.lieu_naissance }}</dd></div>
+    <div><dt>Redoublant(e)</dt><dd>{{ 'Non' if eleve.statut == 'nouveau' else 'Ancien élève' }}</dd></div>
+    <div><dt>Année scolaire</dt><dd>{{ annee_scolaire }}</dd></div>
+    <div><dt>Classe</dt><dd>{{ eleve.classe_nom }}</dd></div>
+    <div><dt>Effectif</dt><dd>{{ effectif }}</dd></div>
+    <div><dt>Professeur principal</dt><dd>{{ principal }}</dd></div>
+  </dl>
+</section>
+
+<section class="fiche" aria-labelledby="titre-parents">
+  <h2 id="titre-parents">Parents</h2>
+  <div class="tableau-defilant" role="region" aria-label="Contacts des parents" tabindex="0">
+    <table>
+      <caption>Contacts des parents</caption>
+      <thead><tr><th scope="col">Lien</th><th scope="col">Nom</th><th scope="col">Contact</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Père</th><td>{{ eleve.nom_pere }}</td><td><a href="tel:+237{{ eleve.tel_pere }}">{{ eleve.tel_pere }}</a></td></tr>
+        <tr><th scope="row">Mère</th><td>{{ eleve.nom_mere }}</td><td><a href="tel:+237{{ eleve.tel_mere }}">{{ eleve.tel_mere }}</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="fiche" aria-labelledby="titre-discipline">
+  <h2 id="titre-discipline">Discipline</h2>
+  <div class="tableau-defilant" role="region" aria-label="Discipline par séquence" tabindex="0">
+    <table>
+      <caption>Absences et sanctions par séquence</caption>
+      <thead>
+        <tr><th scope="col">Séquence</th><th scope="col">Absences</th><th scope="col">Justifiées</th><th scope="col">Consignes</th><th scope="col">Exclusions</th></tr>
+      </thead>
+      <tbody>
+        {% for d in discipline %}
+        <tr><th scope="row">{{ d.sequence }}</th><td>{{ d.absences }}</td><td>{{ d.absences_justifiees }}</td><td>{{ d.consignes }}</td><td>{{ d.exclusions }}</td></tr>
+        {% else %}
+        <tr><td colspan="5">Aucune donnée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block titre %}Historique des moyennes{% endblock %}
+{% block lib %}<script src="{{ url_for('static', filename='js/lib/chart.umd.js') }}" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/historique.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<h1>Historique des moyennes</h1>
+<p>{{ eleve.nom }} {{ eleve.prenom }} · {{ eleve.classe_nom }} · matricule {{ eleve.matricule }}</p>
+
+<figure class="graphique">
+  <div class="zone-graphique">
+    <canvas id="graphique-evolution" data-url="{{ url_for('api_evolution', eleve_id=eleve.id) }}"
+            role="img" aria-label="Courbe des moyennes de l'élève et de la classe, séquence par séquence">
+      Le tableau ci-dessous donne les mêmes valeurs.
+    </canvas>
+  </div>
+  <figcaption>Moyenne de l'élève et moyenne de la classe, séquence par séquence</figcaption>
+</figure>
+
+<div class="tableau-defilant" role="region" aria-label="Moyennes par séquence" tabindex="0">
+  <table>
+    <caption>Moyennes par séquence</caption>
+    <thead>
+      <tr>
+        <th scope="col">Séquence</th>
+        <th scope="col">Moyenne</th>
+        <th scope="col">Rang</th>
+        <th scope="col">Moyenne de la classe</th>
+        <th scope="col">Bulletin</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in h.lignes %}
+      <tr>
+        <th scope="row">Séquence {{ l.sequence }}</th>
+        <td>{{ l.moyenne|note }}</td>
+        <td>{% if l.rang %}{{ l.rang|rang }} sur {{ h.effectif }}{% else %}—{% endif %}</td>
+        <td>{{ l.moyenne_classe|note }}</td>
+        <td>{% if l.moyenne is not none %}<a href="{{ url_for('bulletin', seq=l.sequence) }}">Voir<span class="visuellement-cache"> le bulletin de la séquence {{ l.sequence }}</span></a>{% else %}Pas de notes{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Trimestres et année</h2>
+<div class="cartes">
+  {% for t in h.trimestres %}
+  <div class="carte">
+    <h3>Trimestre {{ t.numero }}</h3>
+    <p class="grand">{{ t.moyenne|note }}<span>/20</span></p>
+  </div>
+  {% endfor %}
+  <div class="carte principale">
+    <h3>Moyenne annuelle</h3>
+    <p class="grand">{{ h.annuelle|note }}<span>/20</span></p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block titre %}Accueil{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/connexion.css') }}">{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/connexion.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<section class="accueil">
+  <div class="presentation">
+    <h1>Portail de notes</h1>
+    <p>Consultez le bulletin de la séquence, le rang dans la classe et l'évolution des moyennes, sans vous déplacer au lycée.</p>
+    <ul class="points-forts">
+      <li>Notes et moyennes coefficientées, mises à jour dès la saisie des enseignants</li>
+      <li>Rang dans la classe, moyenne du trimestre et de l'année</li>
+      <li>Bulletin imprimable</li>
+    </ul>
+    <p>Vous êtes enseignant ? <a href="{{ url_for('connexion_enseignant') }}">Accédez à l'espace enseignant</a>.</p>
+  </div>
+
+  <form id="form-eleve" class="formulaire" method="post" action="{{ url_for('connexion') }}" novalidate>
+    <h2>Espace élève et parents</h2>
+    <p id="erreur" class="erreur-js" role="alert"></p>
+    <label for="matricule">Matricule (10 chiffres)</label>
+    <input id="matricule" name="matricule" type="text" inputmode="numeric" autocomplete="username" maxlength="10" required value="{{ matricule }}">
+    <label for="code">Code d'accès (6 chiffres)</label>
+    <input id="code" name="code" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" required>
+    <button type="submit" class="bouton">Consulter mon bulletin</button>
+    <p class="aide">Le matricule et le code sont remis par l'administration du lycée.</p>
+  </form>
+</section>
+{% endblock %}

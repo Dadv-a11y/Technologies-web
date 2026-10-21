@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titre %}Liste de classe · {{ classe.nom }}{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/liste_classe.css') }}">{% endblock %}
+{% block lib %}<script src="{{ url_for('static', filename='js/lib/chart.umd.js') }}" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/liste_classe.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<h1>{{ classe.nom }}</h1>
+<p>Liste de classe · séquence {{ seq }} · effectif {{ r.effectif }}</p>
+
+<nav class="choix-sequence" aria-label="Choix de la séquence">
+  <ul>
+    {% for s in range(1, nb_sequences + 1) %}
+    <li><a href="{{ url_for('liste_classe', classe_id=classe.id, seq=s) }}"{% if s == seq %} aria-current="page"{% endif %}>Séq {{ s }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+{% if r.notes == 0 %}
+<p class="message info">Aucune note n'a encore été saisie pour la séquence {{ seq }}.</p>
+{% else %}
+<div class="cartes trois">
+  <div class="carte principale"><h2>Moyenne de la classe</h2><p class="grand">{{ r.moyenne|note }}<span>/20</span></p></div>
+  <div class="carte"><h2>Taux de réussite</h2><p class="grand">{{ '%.1f'|format(r.taux)|replace('.', ',') }}<span> %</span></p><p>{{ r.reussites }} élève(s) sur {{ r.notes }} ont 10 ou plus</p></div>
+  <div class="carte"><h2>Premier et dernier</h2><dl><dt>Premier</dt><dd>{{ r.premier|note }}</dd><dt>Dernier</dt><dd>{{ r.dernier|note }}</dd></dl></div>
+</div>
+
+<figure class="graphique">
+  <div class="zone-graphique">
+    <canvas id="graphique-classe" data-url="{{ url_for('api_moyennes_classe', classe_id=classe.id, seq=seq) }}"
+            role="img" aria-label="Nombre d'élèves par tranche de moyenne">
+      Le tableau ci-dessous donne les moyennes de chaque élève.
+    </canvas>
+  </div>
+  <figcaption>Nombre d'élèves par tranche de moyenne</figcaption>
+</figure>
+
+<div class="tableau-defilant" role="region" aria-label="Moyennes et rangs" tabindex="0">
+  <table>
+    <caption>Moyennes et rangs de la séquence {{ seq }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Rang</th>
+        <th scope="col" class="optionnelle">Matricule</th>
+        <th scope="col">Élève</th>
+        <th scope="col">Moyenne</th>
+        <th scope="col" class="optionnelle">Appréciation</th>
+        <th scope="col" class="optionnelle">Moy. annuelle</th>
+        <th scope="col" class="optionnelle">Rang annuel</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in r.lignes %}
+      <tr>
+        <td>{{ l.rang|rang }}</td>
+        <td class="optionnelle">{{ l.matricule }}</td>
+        <th scope="row">{{ l.nom }} {{ l.prenom }}</th>
+        <td class="note{% if l.moyenne is not none and l.moyenne < 10 %} sous-moyenne{% endif %}">{{ l.moyenne|note }}</td>
+        <td class="optionnelle">{{ l.appreciation }}</td>
+        <td class="optionnelle">{{ l.annuelle|note }}</td>
+        <td class="optionnelle">{{ l.rang_annuel|rang }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+<p><a href="{{ url_for('tableau_enseignant') }}">Retour à mes classes</a></p>
+{% endblock %}

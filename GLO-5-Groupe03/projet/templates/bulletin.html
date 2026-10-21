@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block titre %}Bulletin · séquence {{ b.sequence }}{% endblock %}
+{% block css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/bulletin.css') }}">{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pages/bulletin.js') }}" defer></script>{% endblock %}
+{% block contenu %}
+<nav class="choix-sequence" aria-label="Choix de la séquence">
+  <ul>
+    {% for s in range(1, nb_sequences + 1) %}
+    <li><a href="{{ url_for('bulletin', seq=s) }}"{% if s == b.sequence %} aria-current="page"{% endif %}>Séq {{ s }}</a></li>
+    {% endfor %}
+  </ul>
+  <button type="button" id="bouton-imprimer" class="bouton" hidden>Imprimer le bulletin</button>
+</nav>
+
+<article class="bulletin">
+  <header class="entete-bulletin">
+    <p class="republique">République du Cameroun · Paix – Travail – Patrie<br>Ministère des Enseignements Secondaires</p>
+    <p class="etablissement">Lycée de Makepe · Douala</p>
+    <h1>Bulletin de notes / Report card</h1>
+    <p>Séquence {{ b.sequence }} · Année scolaire {{ annee_scolaire }}</p>
+  </header>
+
+  <section aria-labelledby="titre-eleve">
+    <h2 id="titre-eleve" class="visuellement-cache">Identité de l'élève</h2>
+    <dl class="identite-eleve">
+      <div><dt>Nom et prénom</dt><dd>{{ b.eleve.nom }} {{ b.eleve.prenom }}</dd></div>
+      <div><dt>Matricule</dt><dd>{{ b.eleve.matricule }}</dd></div>
+      <div><dt>Né(e) le</dt><dd>{{ b.eleve.date_naissance|date_fr }} à {{ b.eleve.lieu_naissance }}</dd></div>
+      <div><dt>Sexe</dt><dd>{{ b.eleve.sexe }}</dd></div>
+      <div><dt>Classe</dt><dd>{{ b.classe.nom }}</dd></div>
+      <div><dt>Effectif</dt><dd>{{ b.effectif }}</dd></div>
+      <div><dt>Statut</dt><dd>{{ b.eleve.statut|capitalize }}</dd></div>
+    </dl>
+  </section>
+
+  {% if not b.a_des_notes %}
+  <p class="message info">Aucune note n'a encore été enregistrée pour la séquence {{ b.sequence }}.
+    {% if b.derniere_sequence != b.sequence %}<a href="{{ url_for('bulletin', seq=b.derniere_sequence) }}">Voir la séquence {{ b.derniere_sequence }}</a>.{% endif %}</p>
+  {% else %}
+  <div class="tableau-defilant" role="region" aria-label="Notes de la séquence {{ b.sequence }}" tabindex="0">
+    <table class="table-notes">
+      <caption>Notes de la séquence {{ b.sequence }}, sur 20</caption>
+      <thead>
+        <tr>
+          <th scope="col">Matière</th>
+          <th scope="col">Coef</th>
+          <th scope="col">Note</th>
+          <th scope="col" class="optionnelle">Note × coef</th>
+          <th scope="col">Rang</th>
+          <th scope="col" class="optionnelle">Professeur</th>
+          <th scope="col"><abbr title="Appréciation">Appréc.</abbr></th>
+        </tr>
+      </thead>
+      {% for g in b.groupes %}
+      <tbody>
+        <tr class="groupe"><th scope="rowgroup" colspan="7">{{ g.nom }}</th></tr>
+        {% for m in g.matieres %}
+        <tr>
+          <th scope="row">{{ m.nom }}</th>
+          <td>{{ m.coefficient }}</td>
+          <td class="note{% if m.note is not none and m.note < 10 %} sous-moyenne{% endif %}">{{ m.note|note }}</td>
+          <td class="optionnelle">{{ m.points|note }}</td>
+          <td>{{ m.rang|rang }}</td>
+          <td class="optionnelle">{{ m.professeur }}</td>
+          <td>{{ m.appreciation }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-groupe">
+          <th scope="row">Moyenne du groupe</th>
+          <td>{{ g.coef }}</td>
+          <td colspan="5">{{ g.moyenne|note }}</td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+  </div>
+
+  <section class="resultats" aria-labelledby="titre-resultats">
+    <h2 id="titre-resultats">Résultats</h2>
+    <div class="cartes">
+      <div class="carte principale">
+        <h3>Moyenne de la séquence</h3>
+        <p class="grand">{{ b.moyenne|note }}<span>/20</span></p>
+        <p>Rang : <strong>{{ b.rang|rang }}</strong> sur {{ b.effectif }}</p>
+        <p>{{ b.appreciation }}</p>
+      </div>
+      <div class="carte">
+        <h3>Dans la classe</h3>
+        <dl>
+          <dt>Moyenne de la classe</dt><dd>{{ b.moyenne_classe|note }}</dd>
+          <dt>Moyenne du premier</dt><dd>{{ b.premier|note }}</dd>
+          <dt>Moyenne du dernier</dt><dd>{{ b.dernier|note }}</dd>
+          <dt>Élèves ayant la moyenne</dt><dd>{{ b.reussites }}</dd>
+        </dl>
+      </div>
+      <div class="carte">
+        <h3>Trimestre et année</h3>
+        <dl>
+          <dt>Moyenne du trimestre {{ b.trimestre }}</dt><dd>{{ b.moyenne_trimestre|note }}</dd>
+          <dt>Moyenne annuelle</dt><dd>{{ b.annuelle|note }}</dd>
+          <dt>Rang annuel</dt><dd>{{ b.rang_annuel|rang }}</dd>
+        </dl>
+      </div>
+      <div class="carte">
+        <h3>Discipline</h3>
+        {% if b.discipline %}
+        <dl>
+          <dt>Absences</dt><dd>{{ b.discipline.absences }}</dd>
+          <dt>Absences justifiées</dt><dd>{{ b.discipline.absences_justifiees }}</dd>
+          <dt>Absences non justifiées</dt><dd>{{ b.discipline.absences - b.discipline.absences_justifiees }}</dd>
+          <dt>Consignes</dt><dd>{{ b.discipline.consignes }}</dd>
+          <dt>Exclusions</dt><dd>{{ b.discipline.exclusions }}</dd>
+        </dl>
+        {% else %}
+        <p>Aucune donnée de discipline.</p>
+        {% endif %}
+      </div>
+    </div>
+    <p class="decision"><strong>Décision du conseil de classe :</strong> {{ b.decision }}</p>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}
