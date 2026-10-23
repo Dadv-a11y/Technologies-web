@@ -10,7 +10,7 @@
 .table-notes .total-groupe th,
 .table-notes .total-groupe td { background: #E8EDF7; font-weight: bold; }
 
-.decision { background: #E8EDF7; border-left: 5px solid #E0A526; padding: 0.8rem 1rem; border-radius: 6px; }
+.decision { background: #E8EDF7; padding: 0.8rem 1rem; border-radius: 6px; }
 
 @media (min-width: 768px) {
   .table-notes { font-size: 1rem; }
