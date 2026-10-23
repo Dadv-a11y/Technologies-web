@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1840px;height:800px;background:transparent;font-family:Inter,sans-serif;color:#17244B;position:relative}
+.t{position:absolute;width:290px;background:#fff;border:2px solid #1F3A6E;border-radius:8px;overflow:hidden;font-size:15.5px}
+.t h4{background:#1F3A6E;color:#fff;font-size:18px;padding:6px 10px;text-align:center}
+.t div{display:flex;justify-content:space-between;padding:2px 10px;height:24px;align-items:center;border-top:1px solid #E3E8F2;font-family:'DejaVu Sans Mono',monospace;font-size:14px}
+.t div em{font-style:normal;font-family:Inter;font-weight:700;font-size:12px;color:#B4790B}
+.t div.pk{background:#FFF4D6;font-weight:700}
+.t div.sep{height:auto;font-family:Inter;font-size:13px;font-style:italic;color:#4a5778}
+svg{position:absolute;left:0;top:0}
+.m{position:absolute;font-size:15px;font-weight:700;color:#17244B;background:#F5F6FA;padding:0 3px}
+.v{position:absolute;font-size:14px;font-style:italic;color:#4a5778}
+</style></head><body>
+<svg width="1840" height="800" fill="none" stroke="#1F3A6E" stroke-width="2.5">
+<!-- G-M --><path d="M290 70 H387"/>
+<!-- M-N --><path d="M677 70 H775"/>
+<!-- N-E --><path d="M1065 70 H1162"/>
+<!-- E-C --><path d="M1452 70 H1550"/>
+<!-- E-Disc --><path d="M1307 301 V460"/>
+<!-- M-EN --><path d="M532 156 V460"/>
+<!-- N-P --><path d="M920 204 V460"/>
+<!-- P-EN --><path d="M775 550 H677"/>
+<!-- C-P principal --><path d="M1620 156 V715 H1015" />
+<!-- C-EN --><path d="M1700 156 V760 H590 V592"/>
+<path d="M1015 715 V615"/>
+</svg>
+<script>
+const T=(x,y,name,rows)=>{document.body.insertAdjacentHTML('beforeend',`<div class="t" style="left:${x}px;top:${y}px"><h4>${name}</h4>${rows.map(r=>`<div class="${r[2]||''}"><span>${r[0]}</span><em>${r[1]||''}</em></div>`).join('')}</div>`)};
+T(0,0,'groupes_matieres',[['id','PK','pk'],['nom','UNIQUE'],['ordre','']]);
+T(387,0,'matieres',[['id','PK','pk'],['nom','UNIQUE'],['coefficient','> 0'],['groupe_id','FK'],['ordre','']]);
+T(775,0,'notes',[['id','PK','pk'],['eleve_id','FK'],['matiere_id','FK'],['sequence','1 à 6'],['valeur','0 à 20'],['enseignant_id','FK'],['modifie_le','']]);
+T(1162,0,'eleves',[['id','PK','pk'],['matricule','UNIQUE'],['nom',''],['prenom',''],['sexe','M / F'],['date_naissance',''],['lieu_naissance',''],['statut',''],['classe_id','FK'],['code_empreinte','haché'],['parents (nom, tel) ×2','']]);
+T(1550,0,'classes',[['id','PK','pk'],['nom','UNIQUE'],['filiere',''],['effectif_max','> 0'],['professeur_principal_id','FK']]);
+T(387,460,'enseignements',[['id','PK','pk'],['classe_id','FK'],['matiere_id','FK'],['enseignant_id','FK']]);
+T(775,460,'enseignants',[['id','PK','pk'],['nom',''],['login','UNIQUE'],['empreinte','haché'],['role','enseignant / admin']]);
+T(1162,460,'discipline',[['id','PK','pk'],['eleve_id','FK'],['sequence','1 à 6'],['absences','≥ 0'],['absences_justifiees','≤ absences'],['consignes','≥ 0'],['exclusions','≥ 0']]);
+const M=(x,y,t)=>document.body.insertAdjacentHTML('beforeend',`<span class="m" style="left:${x}px;top:${y}px">${t}</span>`);
+const V=(x,y,t)=>document.body.insertAdjacentHTML('beforeend',`<span class="v" style="left:${x}px;top:${y}px">${t}</span>`);
+// G-M
+M(294,44,'1');M(358,44,'1..*');V(300,76,'regroupe');
+// M-N
+M(681,44,'1');M(745,44,'0..*');V(692,76,'reçoit');
+// N-E
+M(1069,44,'0..*');M(1137,44,'1');V(1073,76,'obtenue par');
+// E-C
+M(1456,44,'0..*');M(1522,44,'1');V(1462,76,'inscrit dans');
+// E-Disc
+M(1312,306,'1');M(1312,432,'0..*');V(1325,392,'a');
+// M-EN
+M(537,162,'1');M(537,432,'0..*');V(550,320,'est enseignée');
+// N-P
+M(925,208,'0..*');M(925,432,'0..1');V(938,350,'saisie par');
+// P-EN
+M(740,525,'1');M(682,525,'0..*');V(690,555,'assure');
+// C-P
+M(1625,162,'0..1');M(1020,622,'0..*');V(1180,692,'professeur principal');
+// C-EN
+M(1705,162,'1');M(595,598,'0..*');V(1200,737,'accueille');
+</script>
+<div style="position:absolute;left:0;top:200px;width:360px;font-size:14px;color:#4a5778;line-height:1.55">
+<b style="color:#17244B">Légende</b><br><span style="background:#FFF4D6;padding:0 6px;font-weight:700">PK</span> clé primaire · <b style="color:#B4790B">FK</b> clé étrangère<br>Cardinalités : 1 · 0..1 · 0..* · 1..*<br><i>enseignements</i> : table d'association<br>(classe, matière) → un seul enseignant</div>
+</body></html>

@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1760px;height:700px;background:transparent;font-family:Inter,sans-serif;color:#17244B;position:relative}
+.n{position:absolute;border-radius:10px;padding:10px 14px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.n b{font-size:23px}.n i{font-style:normal;font-size:15px;opacity:.85;font-family:'DejaVu Sans Mono',monospace}
+.n small{font-size:15px;opacity:.9}
+.root{background:#E3A82B;color:#17244B}
+.entry{background:#1F3A6E;color:#fff}
+.page{background:#fff;border:2px solid #1F3A6E}
+.adm{background:#fff;border:2px dashed #E3A82B}
+.tag{position:absolute;font-size:15px;font-weight:700;background:#E3A82B;color:#17244B;padding:3px 10px;border-radius:12px}
+svg{position:absolute;left:0;top:0}
+.lbl{position:absolute;font-size:16px;color:#4a5778;font-style:italic}
+</style></head><body>
+<svg width="1760" height="700" fill="none" stroke="#1F3A6E" stroke-width="3">
+<path d="M880 80 V115 H440 V150"/><path d="M880 115 H1320 V150"/>
+<path d="M440 240 V285"/><path d="M135 285 H725"/><path d="M135 285 V330"/><path d="M430 285 V330"/><path d="M725 285 V330"/>
+<path d="M1320 240 V330"/>
+<path d="M1320 450 V490"/><path d="M1070 490 H1410"/><path d="M1070 490 V540"/><path d="M1410 490 V540"/>
+<path d="M1500 390 H1655 V540" stroke="#E3A82B" stroke-dasharray="9 7"/>
+</svg>
+<div class="n root" style="left:700px;top:0;width:360px;height:80px"><b>Portail de notes</b><small>Lycée de Makepe · Flask</small></div>
+<div class="n entry" style="left:220px;top:150px;width:440px;height:90px"><b>Connexion élève</b><i>/  ·  POST /connexion</i></div>
+<div class="n entry" style="left:1100px;top:150px;width:440px;height:90px"><b>Connexion enseignant / proviseur</b><i>/enseignant/connexion</i></div>
+<div class="lbl" style="left:455px;top:250px">matricule + code · session « élève »</div>
+<div class="lbl" style="left:1335px;top:250px">login + mot de passe · rôle enseignant ou admin</div>
+
+<div class="n page" style="left:0;top:330px;width:270px;height:140px"><b>Bulletin</b><i>/bulletin/‹1 à 6›</i><small>moyennes, rang · impression</small></div>
+<div class="n page" style="left:295px;top:330px;width:270px;height:140px"><b>Historique</b><i>/historique</i><small>graphique : /api/eleve/‹id›/evolution</small></div>
+<div class="n page" style="left:590px;top:330px;width:270px;height:140px"><b>Fiche élève</b><i>/fiche</i><small>identité, discipline</small></div>
+
+<div class="n page" style="left:1140px;top:330px;width:360px;height:120px"><b>Mes classes</b><i>/enseignant</i><small>classes et matières de l'enseignant</small></div>
+<div class="n page" style="left:870px;top:540px;width:400px;height:150px"><b>Saisie et correction</b><i style="font-size:13.5px">/enseignant/saisie/‹classe›/‹matière›/‹séq›</i><small>validation JS puis serveur</small></div>
+<div class="n page" style="left:1290px;top:540px;width:240px;height:150px"><b>Liste de classe</b><i>/enseignant/classe/‹id›</i><small>moyennes, rangs</small></div>
+<div class="n adm" style="left:1550px;top:540px;width:210px;height:150px"><b>Statistiques</b><i>/admin/statistiques</i><small>toutes les classes</small></div>
+<div class="tag" style="left:1560px;top:508px">proviseur seulement</div>
+
+<div class="n" style="left:0;top:560px;width:840px;height:130px;background:#E9EDF6;align-items:flex-start;text-align:left;padding:16px 22px;gap:8px">
+<b style="font-size:19px">Règles communes</b>
+<small>Chaque page protégée vérifie la session et le rôle : sans connexion, retour à l'accueil ; mauvais rôle, page 403.</small>
+<small>Déconnexion (POST /deconnexion) disponible dans chaque espace · adresse inconnue : page 404.</small></div>
+</body></html>
