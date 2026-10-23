@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1700px;height:760px;background:transparent;font-family:Inter,sans-serif;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:24px 32px}
+.p{background:#14213d;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.h{background:#1b3a6b;color:#fff;padding:9px 20px;font-weight:700;font-size:22px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.h small{font-weight:400;font-size:16px;color:#F2C14E;font-family:'DejaVu Sans Mono',monospace}
+pre{padding:12px 20px;font-family:'DejaVu Sans Mono',monospace;font-size:15.5px;line-height:1.42;color:#e8edf7;white-space:pre}
+.k{color:#F2C14E}.s{color:#8fd6a9}.c{color:#8a94a6;font-style:italic}.f{color:#8ab4f8}
+</style></head><body>
+<div class="p"><div class="h"><span>Clés étrangères · pas d'orphelin</span><small>schema.sql</small></div><pre id="a"></pre></div>
+<div class="p"><div class="h"><span>UNIQUE · une identité, une note</span><small>schema.sql</small></div><pre id="b"></pre></div>
+<div class="p"><div class="h"><span>CHECK · des valeurs bornées</span><small>schema.sql</small></div><pre id="c"></pre></div>
+<div class="p"><div class="h"><span>NOT NULL · des champs obligatoires</span><small>schema.sql</small></div><pre id="d"></pre></div>
+<script>
+const A=`PRAGMA foreign_keys = ON;   -- réactivé à chaque connexion (get_db)
+
+CREATE TABLE eleves (
+    ...
+    classe_id INTEGER NOT NULL REFERENCES classes (id),
+    ...
+);
+CREATE TABLE notes (
+    eleve_id   INTEGER NOT NULL REFERENCES eleves (id),
+    matiere_id INTEGER NOT NULL REFERENCES matieres (id),
+    ...
+);`;
+const B=`matricule TEXT NOT NULL UNIQUE,    -- eleves
+login     TEXT NOT NULL UNIQUE,    -- enseignants
+
+-- notes : une note par élève, matière et séquence
+UNIQUE (eleve_id, matiere_id, sequence)
+
+-- enseignements : un seul enseignant par couple
+UNIQUE (classe_id, matiere_id)`;
+const C=`valeur    REAL    NOT NULL CHECK (valeur BETWEEN 0 AND 20),
+sequence  INTEGER NOT NULL CHECK (sequence BETWEEN 1 AND 6),
+coefficient INTEGER NOT NULL CHECK (coefficient > 0),
+sexe TEXT NOT NULL CHECK (sexe IN ('M', 'F')),
+
+matricule TEXT NOT NULL UNIQUE
+  CHECK (matricule GLOB '[0-9][0-9][0-9][0-9][0-9]...'),
+
+CHECK (absences_justifiees <= absences)`;
+const D=`CREATE TABLE eleves (
+    matricule      TEXT NOT NULL UNIQUE,
+    nom            TEXT NOT NULL,
+    prenom         TEXT NOT NULL,
+    date_naissance TEXT NOT NULL,
+    code_empreinte TEXT NOT NULL,   -- jamais en clair
+    statut TEXT NOT NULL DEFAULT 'nouveau'
+        CHECK (statut IN ('ancien', 'nouveau')),
+    ...
+);`;
+const KW=/\b(CREATE|TABLE|PRAGMA|NOT NULL|NULL|UNIQUE|CHECK|REFERENCES|DEFAULT|BETWEEN|AND|IN|GLOB|ON|INTEGER|TEXT|REAL)\b/g;
+function hl(t){t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;');const parts=[];
+ t=t.replace(/(--[^\n]*)|('[^'\n]*')/g,(m,c,s)=>{parts.push(c?'<span class="c">'+c+'</span>':'<span class="s">'+s+'</span>');return '\u0000'+(parts.length-1)+'\u0000';});
+ t=t.replace(KW,'<span class="k">$1</span>');
+ return t.replace(/\u0000(\d+)\u0000/g,(m,i)=>parts[+i]);}
+for(const [id,t] of [['a',A],['b',B],['c',C],['d',D]]) document.getElementById(id).innerHTML=hl(t);
+</script></body></html>
