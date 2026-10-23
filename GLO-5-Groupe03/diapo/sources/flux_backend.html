@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1700px;height:760px;background:transparent;font-family:Inter,sans-serif;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:24px 32px}
+.p{background:#14213d;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.h{background:#1b3a6b;color:#fff;padding:9px 20px;font-weight:700;font-size:22px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.h i{font-style:normal;background:#E0A526;color:#14213d;border-radius:50%;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;margin-right:10px}
+.h small{font-weight:400;font-size:16px;color:#F2C14E;font-family:'DejaVu Sans Mono',monospace}
+pre{padding:12px 20px;font-family:'DejaVu Sans Mono',monospace;font-size:15.5px;line-height:1.42;color:#e8edf7;white-space:pre}
+.k{color:#F2C14E}.s{color:#8fd6a9}.c{color:#8a94a6;font-style:italic}.f{color:#8ab4f8}
+</style></head><body>
+<div class="p"><div class="h"><span><i>1</i>Session · authentifier</span><small>app.py · connexion()</small></div><pre id="a"></pre></div>
+<div class="p"><div class="h"><span><i>2</i>Rôle · autoriser</span><small>app.py · admin_requis</small></div><pre id="b"></pre></div>
+<div class="p"><div class="h"><span><i>3</i>Entrée · valider</span><small>app.py · saisie()</small></div><pre id="c"></pre></div>
+<div class="p"><div class="h"><span><i>4</i>Requête SQL · protéger</span><small>app.py · peut_voir_classe()</small></div><pre id="d"></pre></div>
+<script>
+const A=`empreinte = eleve["code_empreinte"] if eleve else EMPREINTE_FACTICE
+if not check_password_hash(empreinte, code) or eleve is None:
+    flash("Matricule ou code d'accès incorrect.", "erreur")
+    return render_template("index.html", matricule=matricule), 401
+
+session.clear()                  # repart d'une session neuve
+session["eleve_id"] = eleve["id"]
+session["role"] = "eleve"`;
+const B=`def admin_requis(fonction):
+    @wraps(fonction)
+    @connexion_requise            # d'abord : une session valide
+    def decorateur(*args, **kwargs):
+        if session.get("role") != "admin":
+            abort(403)            # puis : le bon rôle
+        return fonction(*args, **kwargs)
+    return decorateur
+
+@app.route("/admin/statistiques")
+@admin_requis
+def statistiques(): ...`;
+const C=`if not re.fullmatch(r"\\d{10}", matricule):
+    erreurs.append("Le matricule comporte 10 chiffres.")
+if not re.fullmatch(r"\\d{6}", code):
+    erreurs.append("Le code d'accès comporte 6 chiffres.")
+
+valeur = float(texte.replace(",", "."))
+if not math.isfinite(valeur) or not 0 <= valeur <= 20:
+    erreurs.append("la note doit être comprise entre 0 et 20.")
+elif abs(valeur * 100 - round(valeur * 100)) > 1e-6:
+    erreurs.append("deux décimales au maximum.")`;
+const D=`ligne = db.execute(
+    "SELECT 1 FROM classes WHERE id = ? AND "
+    "(professeur_principal_id = ? OR id IN "
+    "(SELECT classe_id FROM enseignements "
+    "WHERE enseignant_id = ?))",
+    (classe_id, session["enseignant_id"],
+     session["enseignant_id"])).fetchone()
+return ligne is not None      # paramètres ?, jamais de texte collé`;
+const KW=/\b(def|if|not|is|None|return|else|elif|import|from|or|and|in)\b/g;
+function hl(t){t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;');const parts=[];
+ t=t.replace(/(#[^\n]*)|("[^"\n]*")/g,(m,c,s)=>{parts.push(c?'<span class="c">'+c+'</span>':'<span class="s">'+s+'</span>');return '\u0000'+(parts.length-1)+'\u0000';});
+ t=t.replace(KW,'<span class="k">$1</span>').replace(/\b(check_password_hash|flash|render_template|clear|abort|fullmatch|append|float|isfinite|execute|fetchone|get|wraps|route)\b(?=\()/g,'<span class="f">$1</span>');
+ return t.replace(/\u0000(\d+)\u0000/g,(m,i)=>parts[+i]);}
+for(const [id,t] of [['a',A],['b',B],['c',C],['d',D]]) document.getElementById(id).innerHTML=hl(t);
+</script></body></html>
