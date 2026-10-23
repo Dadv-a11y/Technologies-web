@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1700px;height:600px;background:transparent;font-family:Inter,sans-serif;display:flex;gap:40px}
+.p{flex:1;background:#14213d;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.h{background:#1b3a6b;color:#fff;padding:14px 22px;font-weight:700;font-size:24px;display:flex;justify-content:space-between;align-items:baseline}
+.h small{font-weight:400;font-size:18px;color:#F2C14E;font-family:'DejaVu Sans Mono',monospace}
+pre{padding:22px 24px;font-family:'DejaVu Sans Mono',monospace;font-size:19.5px;line-height:1.5;color:#e8edf7;white-space:pre}
+.k{color:#F2C14E}.s{color:#8fd6a9}.c{color:#8a94a6;font-style:italic}.f{color:#8ab4f8}
+</style></head><body>
+<div class="p"><div class="h">Valider avant l'envoi<small>connexion.js</small></div><pre id="a"></pre></div>
+<div class="p"><div class="h">Appeler l'API avec fetch<small>main.js · historique.js</small></div><pre id="b"></pre></div>
+<script>
+const A=`formulaire.addEventListener("submit", (evenement) => {
+  const messages = [];
+  for (const regle of regles) {
+    const champ = formulaire.elements[regle.champ];
+    const valide = regle.test(champ.value.trim());
+    champ.classList.toggle("invalide", !valide);
+    if (!valide) messages.push(regle.message);
+  }
+  if (messages.length > 0) {
+    evenement.preventDefault(); // on bloque l'envoi
+    afficherToast(messages.join(" "), "erreur");
+  }
+});
+
+// Le serveur revérifie tout : ce contrôle évite
+// seulement un aller-retour inutile.`;
+const B=`async function chargerJson(url) {
+  try {
+    const reponse = await fetch(url);
+    if (!reponse.ok) throw new Error("Erreur " + reponse.status);
+    return await reponse.json();
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+const donnees = await chargerJson(canvas.dataset.url);
+if (!donnees) return afficherEchecGraphique();
+new Chart(canvas, { type: "line",
+  data: { labels: donnees.sequences, ... } });`;
+const KW=/\b(async|function|const|for|of|if|return|await|new|try|catch|throw)\b/g;
+function hl(t){
+  t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const parts=[];
+  t=t.replace(/(\/\/[^\n]*)|("[^"]*")/g,(m,c,s)=>{parts.push(c?'<span class="c">'+c+'</span>':'<span class="s">'+s+'</span>');return '\u0000'+(parts.length-1)+'\u0000';});
+  t=t.replace(KW,'<span class="k">$1</span>').replace(/\b(fetch|addEventListener|preventDefault|afficherToast|chargerJson|afficherEchecGraphique|Chart|json|toggle|push|trim|test|join)\b(?=\()/g,'<span class="f">$1</span>');
+  return t.replace(/\u0000(\d+)\u0000/g,(m,i)=>parts[+i]);
+}
+document.getElementById('a').innerHTML=hl(A);document.getElementById('b').innerHTML=hl(B);
+</script></body></html>
