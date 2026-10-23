@@ -17,7 +17,6 @@
 
   <form id="form-eleve" class="formulaire" method="post" action="{{ url_for('connexion') }}" novalidate>
     <h2>Espace élève et parents</h2>
-    <p id="erreur" class="erreur-js" role="alert"></p>
     <label for="matricule">Matricule (10 chiffres)</label>
     <input id="matricule" name="matricule" type="text" inputmode="numeric" autocomplete="username" maxlength="10" required value="{{ matricule }}">
     <label for="code">Code d'accès (6 chiffres)</label>

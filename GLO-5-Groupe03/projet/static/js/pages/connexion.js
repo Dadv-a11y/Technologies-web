@@ -2,7 +2,6 @@
 // Le serveur revérifie tout : ces contrôles ne servent qu'à éviter un aller-retour inutile.
 
 function verifierFormulaire(formulaire, regles) {
-  const erreur = document.querySelector("#erreur");
   formulaire.addEventListener("submit", (evenement) => {
     const messages = [];
     for (const regle of regles) {
@@ -13,7 +12,7 @@ function verifierFormulaire(formulaire, regles) {
     }
     if (messages.length > 0) {
       evenement.preventDefault();                       // on bloque l'envoi
-      erreur.textContent = messages.join(" ");
+      afficherToast(messages.join(" "), "erreur", { cle: "formulaire" });
     }
   });
 }

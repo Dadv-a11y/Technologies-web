@@ -44,10 +44,12 @@
       </ul>
     </nav>
   </header>
-  <main id="contenu">
+  <div id="toasts" class="toasts">
     {% for categorie, message in get_flashed_messages(with_categories=true) %}
-      <p class="message {{ categorie }}" role="{{ 'alert' if categorie == 'erreur' else 'status' }}">{{ message }}</p>
+      <div class="toast {{ categorie }}" role="{{ 'alert' if categorie == 'erreur' else 'status' }}"><p>{{ message }}</p></div>
     {% endfor %}
+  </div>
+  <main id="contenu">
     {% block contenu %}{% endblock %}
   </main>
   <footer>

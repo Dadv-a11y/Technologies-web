@@ -13,7 +13,6 @@
 
   <form id="form-enseignant" class="formulaire" method="post" action="{{ url_for('connexion_enseignant') }}" novalidate>
     <h2>Connexion</h2>
-    <p id="erreur" class="erreur-js" role="alert"></p>
     <label for="login">Login</label>
     <input id="login" name="login" type="text" autocomplete="username" required value="{{ login }}">
     <label for="mot_de_passe">Mot de passe</label>

@@ -4,7 +4,6 @@
 const formSaisie = document.querySelector("#form-saisie");
 if (formSaisie) {
   const champs = formSaisie.querySelectorAll(".champ-note");
-  const erreur = document.querySelector("#erreur");
   const cellMoyenne = document.querySelector("#moyenne-direct");
   const resume = document.querySelector("#resume-saisie");
 
@@ -40,9 +39,12 @@ if (formSaisie) {
     } else {
       cellMoyenne.textContent = "—";
     }
-    erreur.textContent = refusees > 0
-      ? refusees + " note(s) refusée(s) : une note est comprise entre 0 et 20, avec deux décimales au maximum."
-      : "";
+    if (refusees > 0) {
+      afficherToast(refusees + " note(s) refusée(s) : une note est comprise entre 0 et 20, avec deux décimales au maximum.",
+        "erreur", { cle: "notes", duree: 0 });
+    } else {
+      masquerToast("notes");
+    }
     resume.textContent = modifiees + " note(s) à enregistrer.";
     return refusees === 0;
   }
